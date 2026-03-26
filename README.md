@@ -63,9 +63,91 @@ print(f"Predicted wage gap in 2035: {prediction[0]:.2f}%")
 
 ```
 linear_regression_model/
-├── summative/
-│   └── linear_regression/
-│       └── multivariate.ipynb
 ├── best_model.pkl
-└── README.md
+├── notebook.ipynb
+├── README.md
+├── summative/
+│   ├── API/
+│   │   ├── best_model.pkl
+│   │   ├── main.py
+│   │   └── requirements.txt
+│   ├── FlutterApp/
+│   │   ├── pubspec.yaml
+│   │   └── lib/
+│   │       └── main.dart
+│   └── linear_regression/
+│       ├── best_model.pkl
+│       └── multivariate.ipynb
 ```
+
+---
+
+## Final Submission Checklist
+
+- `README.md` ✅ Mission statement and project description
+- `notebook.ipynb` ✅ Full model workflow notebook
+- `best_model.pkl` ✅ Best-performing saved model
+- `summative/API/main.py` ✅ FastAPI backend for prediction
+- `app_demo.mp4` ⏳ Record and add your 2-minute app demo video
+
+---
+
+## Run the Backend (FastAPI)
+
+1. Open terminal in `summative/API`
+2. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Start API server:
+
+```bash
+uvicorn main:app --reload
+```
+
+4. Test in browser: `http://127.0.0.1:8000`
+
+5. Optional smoke test (while API is running):
+
+```bash
+python smoke_test.py --year 2035
+```
+
+---
+
+## Run the Mobile App (Flutter)
+
+1. Open terminal in `summative/FlutterApp`
+2. If needed, initialize project shell files:
+
+```bash
+flutter create .
+```
+
+3. Install packages:
+
+```bash
+flutter pub get
+```
+
+4. Run app:
+
+```bash
+flutter run
+```
+
+The app calls the API endpoint at `http://10.0.2.2:8000/predict`.
+
+---
+
+## One-Command Demo (Windows PowerShell)
+
+From the repository root, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run_demo.ps1
+```
+
+This opens FastAPI in a new PowerShell window, then starts the Flutter app.
