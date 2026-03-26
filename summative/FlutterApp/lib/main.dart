@@ -1,21 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
-  runApp(const WageGapApp());
+  runApp(const GenderGapApp());
 }
 
-class WageGapApp extends StatelessWidget {
-  const WageGapApp({super.key});
+class GenderGapApp extends StatelessWidget {
+  const GenderGapApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wage Gap Predictor',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: const PredictionScreen(),
     );
   }
@@ -30,96 +28,86 @@ class PredictionScreen extends StatefulWidget {
 
 class _PredictionScreenState extends State<PredictionScreen> {
   final TextEditingController _yearController = TextEditingController();
-  String _resultText = '';
-  bool _loading = false;
+  String _result = "";
+  bool _isLoading = false;
 
-  static const String _apiUrl = 'http://10.0.2.2:8000/predict';
+  // Replace with your actual Render URL
+  final String apiUrl = "https://linear-regression-model-fz89.onrender.com/predict";
 
-  Future<void> _predict() async {
-    final input = _yearController.text.trim();
-    final year = int.tryParse(input);
-
-    if (year == null) {
-      setState(() {
-        _resultText = 'Please enter a valid year.';
-      });
-      return;
-    }
+  Future<void> getPrediction() async {
+    if (_yearController.text.isEmpty) return;
 
     setState(() {
-      _loading = true;
-      _resultText = '';
+      _isLoading = true;
+      _result = "";
     });
 
     try {
       final response = await http.post(
-        Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'year': year}),
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"year": int.parse(_yearController.text)}),
       );
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-        final result = decoded['predicted_gap_percentage'];
+        final data = jsonDecode(response.body);
         setState(() {
-          _resultText =
-              'In $year, the predicted wage gap is $result%.';
+          _result = "Predicted Wage Gap: ${data['predicted_gap_percentage']}%";
         });
       } else {
         setState(() {
-          _resultText =
-              'Prediction failed. Server responded with ${response.statusCode}.';
+          _result = "Error: Could not get prediction.";
         });
       }
-    } catch (_) {
+    } catch (e) {
       setState(() {
-        _resultText = 'Could not connect to the API.';
+        _result = "Connection Error. Check if API is live!";
       });
     } finally {
       setState(() {
-        _loading = false;
+        _isLoading = false;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _yearController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gender Wage Gap Predictor')),
+      appBar: AppBar(title: const Text("Wage Gap Predictor")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              "Empowering Women: Future Economic Projections",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            // Requirement: TextField for input
             TextField(
               controller: _yearController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'Enter year',
                 border: OutlineInputBorder(),
+                labelText: "Enter Year (e.g., 2030)",
               ),
             ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: _loading ? null : _predict,
-              child: _loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Predict Wage Gap'),
+            const SizedBox(height: 20),
+            // Requirement: Button with text 'Predict'
+            ElevatedButton(
+              onPressed: _isLoading ? null : getPrediction,
+              child: _isLoading 
+                  ? const CircularProgressIndicator(color: Colors.white) 
+                  : const Text("Predict"),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 30),
+            // Requirement: Display area for result
             Text(
-              _resultText,
-              style: Theme.of(context).textTheme.titleMedium,
+              _result,
+              style: const TextStyle(fontSize: 20, color: Colors.blueAccent, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
