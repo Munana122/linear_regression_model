@@ -36,7 +36,7 @@ This project uses regression analysis on OECD wage gap data to predict future ec
 
 ## Video Demo
 
-🎥 [Watch the demo on YouTube](https://www.youtube.com/your-link-here)
+🎥 [Watch the demo on YouTube](https://youtu.be/X8Z5JHlRNkI)
 
 ---
 
